@@ -40,6 +40,6 @@ Aquí tienes un ejemplo visual de cómo funciona KaliWidget en acción:
 
 ## Créditos
 
-- **Autor**: Onix
+- **Autor**: SkyW4r33x
 
 ---
