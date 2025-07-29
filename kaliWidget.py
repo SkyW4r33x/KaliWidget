@@ -510,10 +510,10 @@ function settarget(){
 
         print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Installed Features\n")
         features = [
-            ("Targeted", "Panel plugin for target IP"),
-            ("IP VPN", "Panel plugin for VPN IP"),
-            ("IP Ethernet", "Panel plugin for Ethernet IP"),
-            ("settarget", "Shell function to set target")
+            ("Targeted", "Panel plugin for target IP."),
+            ("IP VPN", "Panel plugin for VPN IP SkyW4r33x."),
+            ("IP Ethernet", "Panel plugin for Ethernet IP."),
+            ("settarget", "Shell function to set target.")
         ]
         
         for name, desc in features:
