@@ -76,8 +76,8 @@ class XfceInstaller:
     ╚███╔███╔╝██║██████╔╝╚██████╔╝███████╗   ██║   
      ╚══╝╚══╝ ╚═╝╚═════╝  ╚═════╝ ╚══════╝   ╚═╝
            """)
-        print(f"{KaliStyle.WHITE}\t\t [ XFCE Installer - v.2.2.0 ]{KaliStyle.RESET}")
-        print(f"{KaliStyle.GREY}\t\t  [ Created by SkyW4r33x ]{KaliStyle.RESET}\n")
+        print(f"{KaliStyle.WHITE}\t    [ XFCE Installer - v.2.2.0 ]{KaliStyle.RESET}")
+        print(f"{KaliStyle.GREY}\t      [ Created by SkyW4r33x ]{KaliStyle.RESET}\n")
 
     def run_command(self, command, shell=False, sudo=False, quiet=True):
         try:
@@ -259,85 +259,96 @@ class XfceInstaller:
             return True
 
         rc_path = os.path.join(self.home_dir, rc_file)
-        function_text = """
-function settarget() {
-    # Colores ANSI para la salida
-    local WHITE='\033[1;37m'
-    local GREEN='\033[0;32m'
-    local YELLOW='\033[1;33m'
-    local RED='\033[0;31m'
-    local BLUE='\033[0;34m'
-    local CYAN='\033[1;36m'
-    local PURPLE='\033[1;35m'
-    local GRAY='\033[38;5;244m'
-    local BOLD='\033[1m'
-    local ITALIC='\033[3m'
-    local COMAND='\033[38;2;73;174;230m'
-    local NC='\033[0m' # Sin color
-    
-    local target_file="$HOME/.config/bin/target/target.txt"
-    
-    mkdir -p "$(dirname "$target_file")" 2>/dev/null
-    
-    if [ $# -eq 0 ]; then
-        if [ -f "$target_file" ]; then
-            rm -f "$target_file"
-            echo -e "\n${CYAN}[${BOLD}+${NC}${CYAN}]${NC} Target limpiado correctamente\n"
-        else
-            echo -e "\n${YELLOW}[${BOLD}!${NC}${YELLOW}]${NC} No hay target para limpiar\n"
+        function_text = f"""
+    # XFCE Installer: settarget function - Start
+    function settarget() {{
+        # Colores ANSI para la salida
+        local WHITE='\\033[1;37m'
+        local GREEN='\\033[0;32m'
+        local YELLOW='\\033[1;33m'
+        local RED='\\033[0;31m'
+        local BLUE='\\033[0;34m'
+        local CYAN='\\033[1;36m'
+        local PURPLE='\\033[1;35m'
+        local GRAY='\\033[38;5;244m'
+        local BOLD='\\033[1m'
+        local ITALIC='\\033[3m'
+        local COMAND='\\033[38;2;73;174;230m'
+        local NC='\\033[0m' # Sin color
+        
+        local target_file="{self.home_dir}/.config/bin/target/target.txt"
+        
+        mkdir -p "$(dirname "$target_file")" 2>/dev/null
+        
+        if [ $# -eq 0 ]; then
+            if [ -f "$target_file" ]; then
+                rm -f "$target_file"
+                echo -e "\\n${{CYAN}}[${{BOLD}}+${{NC}}${{CYAN}}]${{NC}} Target limpiado correctamente\\n"
+            else
+                echo -e "\\n${{YELLOW}}[${{BOLD}}!${{NC}}${{YELLOW}}]${{NC}} No hay target para limpiar\\n"
+            fi
+            return 0
         fi
+        
+        local ip_address="$1"
+        local machine_name="$2"
+        
+        if [ -z "$ip_address" ] || [ -z "$machine_name" ]; then
+            echo -e "\\n${{RED}}▋${{NC}} Error${{RED}}${{BOLD}}:${{NC}}${{ITALIC}} modo de uso.${{NC}}"
+            echo -e "${{GRAY}}—————————————————————${{NC}}"
+            echo -e "  ${{CYAN}}• ${{NC}}${{COMAND}}settarget ${{NC}}192.168.1.100 WebServer "
+            echo -e "  ${{CYAN}}• ${{NC}}${{COMAND}}settarget ${{GRAY}}${{ITALIC}}(limpiar target)${{NC}}\\n"
+            return 1
+        fi
+        
+        if ! echo "$ip_address" | grep -qE '^[0-9]{{1,3}}\\.[0-9]{{1,3}}\\.[0-9]{{1,3}}\\.[0-9]{{1,3}}$'; then
+            echo -e "\\n${{RED}}▋${{NC}} Error${{RED}}${{BOLD}}:${{NC}}"
+            echo -e "${{GRAY}}————————${{NC}}"
+            echo -e "${{RED}}[${{BOLD}}✘${{NC}}${{RED}}]${{NC}} Formato de IP inválido ${{YELLOW}}→${{NC}} ${{RED}}$ip_address${{NC}}"
+            echo -e "${{BLUE}}${{BOLD}}[+] ${{NC}}Ejemplo válido:${{NC}} ${{GRAY}}192.168.1.100${{NC}}\\n"
+            return 1
+        fi
+        
+        if ! echo "$ip_address" | awk -F'.' '{{ 
+            for(i=1; i<=4; i++) {{ 
+                if($i < 0 || $i > 255) exit 1
+                if(length($i) > 1 && substr($i,1,1) == "0") exit 1
+            }}
+        }}'; then
+            echo -e "\\n${{RED}}[${{BOLD}}✘${{NC}}${{RED}}]${{NC}} IP inválida ${{RED}}→${{NC}} ${{BOLD}}$ip_address${{NC}}"
+            return 1
+        fi
+        
+        echo "$ip_address $machine_name" > "$target_file"
+        
+        if [ $? -eq 0 ]; then
+            echo -e "\\n${{YELLOW}}▌${{NC}} Target establecido correctamente${{YELLOW}}${{BOLD}}:${{NC}}"
+            echo -e "${{GRAY}}—————————————————————————————————${{NC}}"
+            echo -e "${{CYAN}}→${{NC}} IP Address:${{GRAY}}...........${{NC}} ${{GREEN}}$ip_address${{NC}}"
+            echo -e "${{CYAN}}→${{NC}} Machine Name:${{GRAY}}.........${{NC}} ${{GREEN}}$machine_name${{NC}}\\n"
+        else
+            echo -e "\\n${{RED}}[${{BOLD}}✘${{NC}}${{RED}}]${{NC}} No se pudo guardar el target\\n"
+            return 1
+        fi
+        
         return 0
-    fi
-    
-    local ip_address="$1"
-    local machine_name="$2"
-    
-    if [ -z "$ip_address" ] || [ -z "$machine_name" ]; then
-        echo -e "\n${RED}▋${NC} Error${RED}${BOLD}:${NC}${ITALIC} modo de uso.${NC}"
-        echo -e "${GRAY}—————————————————————${NC}"
-        echo -e "  ${CYAN}• ${NC}${COMAND}settarget ${NC}192.168.1.100 WebServer "
-        echo -e "  ${CYAN}• ${NC}${COMAND}settarget ${GRAY}${ITALIC}(limpiar target)${NC}\n"
-        return 1
-    fi
-    
-    if ! echo "$ip_address" | grep -qE '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'; then
-        echo -e "\n${RED}▋${NC} Error${RED}${BOLD}:${NC}"
-        echo -e "${GRAY}————————${NC}"
-        echo -e "${RED}[${BOLD}✘${NC}${RED}]${NC} Formato de IP inválido ${YELLOW}→${NC} ${RED}$ip_address${NC}"
-        echo -e "${BLUE}${BOLD}[+] ${NC}Ejemplo válido:${NC} ${GRAY}192.168.1.100${NC}\n"
-        return 1
-    fi
-    
-    if ! echo "$ip_address" | awk -F'.' '{
-        for(i=1; i<=4; i++) {
-            if($i < 0 || $i > 255) exit 1
-            if(length($i) > 1 && substr($i,1,1) == "0") exit 1
-        }
-    }'; then
-        echo -e "\n${RED}[${BOLD}✘${NC}${RED}]${NC} IP inválida ${RED}→${NC} ${BOLD}$ip_address${NC}"
-        return 1
-    fi
-    
-    echo "$ip_address $machine_name" > "$target_file"
-    
-    if [ $? -eq 0 ]; then
-        echo -e "\n${YELLOW}▌${NC} Target establecido correctamente${YELLOW}${BOLD}:${NC}"
-        echo -e "${GRAY}—————————————————————————————————${NC}"
-        echo -e "${CYAN}→${NC} IP Address:${GRAY}...........${NC} ${GREEN}$ip_address${NC}"
-        echo -e "${CYAN}→${NC} Machine Name:${GRAY}.........${NC} ${GREEN}$machine_name${NC}\n"
-    else
-        echo -e "\n${RED}[${BOLD}✘${NC}${RED}]${NC} No se pudo guardar el target\n"
-        return 1
-    fi
-    
-    return 0
-}
-"""
+    }}
+    # XFCE Installer: settarget function - End
+    """
         try:
-            with open(rc_path, 'r') as f:
-                if '# settargeted' in f.read():
-                    print(f"{KaliStyle.WARNING} Function already exists in {rc_file}. Skipping.")
-                    return True
+            # Verificar si la función ya existe
+            if os.path.exists(rc_path):
+                with open(rc_path, 'r') as f:
+                    content = f.read()
+                    if 'function settarget()' in content:
+                        print(f"{KaliStyle.WARNING} Function already exists in {rc_file}. Skipping.")
+                        return True
+            # Verificar permisos de escritura
+            if os.path.exists(rc_path) and not os.access(rc_path, os.W_OK):
+                print(f"{KaliStyle.ERROR} No write permissions for {rc_file}. Check permissions.")
+                logging.error(f"No write permissions for {rc_path}")
+                return False
+            # Escribir la función
             with open(rc_path, 'a') as f:
                 f.write(function_text)
             self.actions_taken.append({'type': 'file_append', 'dest': rc_path})
