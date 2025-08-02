@@ -15,6 +15,7 @@ from pathlib import Path
 import logging
 import getpass
 import re
+import pwd
 
 # ------------------------------- Kali Style Class --------------------------- #
 
@@ -733,7 +734,6 @@ function settarget() {{
         try:
             config_bin = os.path.join(self.home_dir, '.config/bin')
             if os.path.exists(config_bin):
-                import pwd
                 user_info = pwd.getpwnam(self.current_user)
                 uid, gid = user_info.pw_uid, user_info.pw_gid
                 
